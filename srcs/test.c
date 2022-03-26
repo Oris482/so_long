@@ -39,6 +39,6 @@ int	main(void)
 	vars.mlx_ptr = mlx_init();
 	vars.win_ptr = mlx_new_window(vars.mlx_ptr, 1300, 1300, "SO_LONG_TEST");
 	//mlx_mouse_hook(vars.win_ptr, display_image, &vars);
-	mlx_hook(vars.win_ptr, 2, 1L<<0, display_image, &vars);
+	mlx_hook(vars.win_ptr, 2, 0, display_image, &vars);
 	mlx_loop(vars.mlx_ptr);
 }
