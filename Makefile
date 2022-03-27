@@ -6,12 +6,12 @@
 #    By: jaesjeon <jaesjeon@student.42seoul.>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/25 15:37:47 by jaesjeon          #+#    #+#              #
-#    Updated: 2022/03/26 19:16:35 by jaesjeon         ###   ########.kr        #
+#    Updated: 2022/03/27 17:56:20 by jaesjeon         ###   ########.kr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS =
 MLX_FLAGS = -framework OpenGL -framework AppKit
 RM = rm -f
 
@@ -21,7 +21,10 @@ MLX = libmlx.dylib
 LIBFT_DIR = ./libft
 MLX_DIR = ./mlx
 
-SRCS_FILES = test.c
+SRCS_FILES = so_long.c	\
+			 get_next_line.c	\
+			 get_next_line_utils.c	\
+			 draw_map.c
 SRCS_DIR = ./srcs
 HEADER_DIR = ./srcs
 
