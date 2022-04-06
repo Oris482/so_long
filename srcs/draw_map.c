@@ -6,7 +6,7 @@
 /*   By: jaesjeon <jaesjeon@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/27 17:11:46 by jaesjeon          #+#    #+#             */
-/*   Updated: 2022/03/27 22:07:56 by jaesjeon         ###   ########.kr       */
+/*   Updated: 2022/04/06 19:57:00 by jaesjeon         ###   ########.kr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include <sys/fcntl.h>
 #include "get_next_line.h"
 
-int	check_map(t_ptrlst *ptrlst)
+int	read_map(t_ptrlst *ptrlst)
 {
 	int	fd;
 	t_map	*map;
@@ -26,9 +26,7 @@ int	check_map(t_ptrlst *ptrlst)
 	if (map == NULL || fd < 0)
 		return (ERROR);
 	map->line = get_next_line(fd);
-	ptrlst->map_x = ft_strlen(map->line) * 40;
-	if (ft_strchr(map->line, '\n'))
-			ptrlst->map_x -= 40;
+	map->len = ft_strlen(map->line);
 	ptrlst->map_y = 0;
 	while (map->line)
 	{
@@ -37,10 +35,17 @@ int	check_map(t_ptrlst *ptrlst)
 			return (ERROR);
 		map = map->next;
 		map->line = get_next_line(fd);
+		map->len = ft_strlen(map->line);
 		ptrlst->map_y++;
 	}
-	ptrlst->map_y *= 40;
 	return (1);
+}
+
+int	check_map(t_ptrlst *ptrlst)
+{
+	ptrlst->map_arr = (char **)ft_calloc(1, ptrlst->map_y);
+	if (ptrlst->map_arr == NULL)
+		return (NULL);
 }
 
 int	draw_map(t_ptrlst *ptrlst)
@@ -49,7 +54,7 @@ int	draw_map(t_ptrlst *ptrlst)
 	int		idx_x;
 	int		idx_y;
 
-	if (!check_map(ptrlst))
+	if (!read_map(ptrlst))
 		return (ERROR);
 	line = ptrlst->map_head->line;
 	idx_y = 0;
@@ -59,15 +64,19 @@ int	draw_map(t_ptrlst *ptrlst)
 		while (*line)
 		{
 			if (*line == '0')
-				display_image(ptrlst, &(*ptrlst->imginfo)[RODE], idx_x * 40, idx_y * 40);
+				;
 			else if (*line == '1')
 				display_image(ptrlst, &(*ptrlst->imginfo)[WALL], idx_x * 40, idx_y * 40);
 			else if (*line == 'C')
 				display_image(ptrlst, &(*ptrlst->imginfo)[ITEM], idx_x * 40, idx_y * 40);
 			else if (*line == 'E')
 				display_image(ptrlst, &(*ptrlst->imginfo)[ENDPOINT], idx_x * 40, idx_y * 40);
-			//else if (*line == 'P')
-				//display_image(ptrlst, &imginfo[PLAYER], idx_x * 40, idx_y * 40);
+			else if (*line == 'P')
+				display_image(ptrlst, &(*ptrlst->imginfo)[RODE], idx_x * 40, idx_y * 40);
+			else if (*line == '\n') 
+				;
+			else
+				return (0);
 			idx_x++;
 			line++;
 		}

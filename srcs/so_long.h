@@ -6,7 +6,7 @@
 /*   By: jaesjeon <jaesjeon@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/27 15:48:11 by jaesjeon          #+#    #+#             */
-/*   Updated: 2022/03/27 22:21:04 by jaesjeon         ###   ########.kr       */
+/*   Updated: 2022/04/06 19:55:24 by jaesjeon         ###   ########.kr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@
 typedef struct s_map
 {
 	char			*line;
+	size_t			len;
 	struct s_map	*next;
 } t_map;
 
@@ -57,6 +58,7 @@ typedef struct s_ptrlst
 	struct s_map		*map_head;
 	int					map_x;
 	int					map_y;
+	char				**map_arr;
 	struct s_imginfo	(*imginfo)[5];
 } t_ptrlst;
 
