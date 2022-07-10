@@ -6,7 +6,7 @@
 #    By: jaesjeon <jaesjeon@student.42seoul.>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/25 15:37:47 by jaesjeon          #+#    #+#              #
-#    Updated: 2022/03/27 17:56:20 by jaesjeon         ###   ########.kr        #
+#    Updated: 2022/06/24 14:15:39 by jaemjeon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,7 @@ RM = rm -f
 
 NAME = so_long
 LIBFT = libft.a
-MLX = libmlx.dylib
+MLX = libmlx.a
 LIBFT_DIR = ./libft
 MLX_DIR = ./mlx
 
