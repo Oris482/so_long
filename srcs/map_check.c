@@ -6,7 +6,7 @@
 /*   By: jaesjeon <jaesjeon@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/11 20:10:31 by jaesjeon          #+#    #+#             */
-/*   Updated: 2022/07/12 14:44:02 by jaesjeon         ###   ########.fr       */
+/*   Updated: 2022/07/13 01:14:45 by jaesjeon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,13 @@ void	check_mapfile_extension(char *filename)
 {
 	char	*extension;
 
+	while (42)
+	{
+		if (!ft_strchr(filename, '/'))
+			break ;
+		filename = ft_strchr(filename, '/') + 1;
+	}
+	printf("filename = %s\n", filename);
 	extension = ".ber";
 	if (ft_strlen(filename) < 5)
 		exit_with_message(1, "Error\nfile extension");
