@@ -6,20 +6,14 @@
 /*   By: jaesjeon <jaesjeon@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/27 17:11:46 by jaesjeon          #+#    #+#             */
-/*   Updated: 2022/04/06 19:57:00 by jaesjeon         ###   ########.kr       */
+/*   Updated: 2022/07/12 03:37:14 by jaesjeon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "so_long.h"
+#include "../headers/so_long.h"
 #include <fcntl.h>
 #include <sys/fcntl.h>
 #include "get_next_line.h"
-
-void    exit_with_error(int err_code, char *err_message)
-{
-    printf("%s\n", err_message);
-    exit(err_code);
-}
 
 void	read_map(t_ptrlst *ptrlst, char *map_file)
 {
@@ -32,7 +26,7 @@ void	read_map(t_ptrlst *ptrlst, char *map_file)
 	fd = open(map_file, O_RDONLY);
 	cur_line = get_next_line(fd);
 	if (map == NULL || fd < 0 || cur_line == NULL)
-        exit_with_error(1, "Error occured while reading map");
+		exit_with_message(1, "Error\nError occured while reading map");
 	map->line = cur_line;
 	ptrlst->map_x = 0;
 	ptrlst->map_y = 1;
@@ -43,133 +37,83 @@ void	read_map(t_ptrlst *ptrlst, char *map_file)
 			break ;
 		map->next = (t_map *)ft_calloc(1, sizeof(t_map));
 		if (map->next == NULL)
-            exit_with_error(1, "Error occured while reading map");
+			exit_with_message(1, "Error\nError occured while reading map");
 		map->next->line = cur_line;
 		ptrlst->map_y++;
 		map = map->next;
 	}
 }
 
-void	check_map_elements(int idx, int end_idx, int map_counter[], char *line)
+static int	convert_alpha(char c)
 {
-	char	*valid_elements;
-
-	valid_elements = "01CEP";
-	while (*line != '\n' && *line)
-	{
-		if (!ft_strchr(valid_elements, *line))
-			exit_with_error(1, "Wrong element included");
-		if (*line == 'C')
-			map_counter[C] = 1;
-		else if (*line == 'E')
-			map_counter[E] = 1;
-		else if (*line == 'P')
-			map_counter[P] = 1;
-        line++;
-	}
-	if (idx == end_idx)
-		if (map_counter[C] == 0 || map_counter[E] == 0 || map_counter[P] == 0)
-			exit_with_error(1, "Not enough essesntial element");
-}
-
-void	check_map_wall(int line_idx, int end_idx, char *line)
-{
-	if (line_idx == 1 || line_idx == end_idx)
-	{
-		while (*line != '\n' && *line)
-		{
-			if (*line != '1')
-				exit_with_error(1, "Map must be surrounded by wall");
-			line++;
-		}
-	}
+	if (c == '0')
+		return (RODE);
+	else if (c == '1')
+		return (WALL);
+	else if (c == 'C')
+		return (ITEM);
+	else if (c == 'E')
+		return (END);
+	else if (c == 'P')
+		return (PLAYER);
 	else
-	{
-		if (*line != '1')
-			exit_with_error(1, "Map must be surrounded by wall");
-		while (*line != '\n' && *line)
-			line++;
-		if (*(line - 1) != '1')
-			exit_with_error(1, "Map must be surrounded by wall");
-	}
+		return (ERROR);
 }
 
-void	check_map_rectangle(t_ptrlst *ptrlst, char *line)
+static void	init_player_position(t_ptrlst *ptrlst, size_t pos_x, size_t pos_y)
 {
-    size_t  line_len;
-
-    line_len = ft_strlen(line);
-    while (*line != '\n' && *line)
-        line++;
-    if (*line == '\n')
-        line_len--;
-	if (ptrlst->map_x == 0)
-		ptrlst->map_x = line_len;
-	else
-	{
-		if (ptrlst->map_x != line_len)
-			exit_with_error(1, "Map is not rectangle");
-	}
+	ptrlst->player_x = pos_x;
+	ptrlst->player_y = pos_y;
 }
 
-int	check_map(t_ptrlst *ptrlst)
+void	convert_map_to_array(t_ptrlst *ptrlst, t_map *map)
 {
-	int		line_idx;
-	int		map_counter[3];
-	t_map	*map;
+	size_t	idx[2];
+	char	*line;
 
-    if (ptrlst->map_y < 3)
-        exit_with_error(1, "Map is wrong");
-	line_idx = 1;
-	ft_memset(&map_counter, 0, sizeof(int) * 3);
-	map = ptrlst->map_head;
+	ptrlst->map_arr = (int **)malloc(ptrlst->map_y * sizeof(int *));
+	if (ptrlst->map_arr == NULL)
+		exit_with_message(1, "Error\nMalloc failed");
+	idx[Y] = 0;
 	while (map)
 	{
-		check_map_elements(line_idx, ptrlst->map_y, map_counter, map->line);
-		check_map_wall(line_idx, ptrlst->map_y, map->line);
-		check_map_rectangle(ptrlst, map->line);
+		idx[X] = 0;
+		(ptrlst->map_arr)[idx[Y]] = (int *)malloc(ptrlst->map_x * sizeof(int));
+		if ((ptrlst->map_arr)[idx[Y]] == NULL)
+			exit_with_message(1, "Error\nMalloc failed");
+		line = map->line;
+		while (*line != '\n' && *line)
+		{
+			(ptrlst->map_arr)[idx[Y]][idx[X]] = convert_alpha(*line);
+			if (*line == 'P' && ptrlst->player_x == 0)
+				init_player_position(ptrlst, idx[X], idx[Y]);
+			idx[X]++;
+			line++;
+		}
+		idx[Y]++;
 		map = map->next;
-		line_idx++;
 	}
 }
 
-int	draw_map(t_ptrlst *ptrlst)
+void	draw_map(t_ptrlst *ptrlst)
 {
-	char	*line;
-	int		idx_x;
-	int		idx_y;
+	size_t	x_idx;
+	size_t	y_idx;
+	size_t	target;
 
-	if (!read_map(ptrlst))
-		return (ERROR);
-	line = ptrlst->map_head->line;
-	idx_y = 0;
-	while (line)
+	y_idx = 0;
+	while (y_idx < ptrlst->map_y)
 	{
-		idx_x = 0;
-		while (*line)
+		x_idx = 0;
+		while (x_idx < ptrlst->map_x)
 		{
-			if (*line == '0')
-				;
-			else if (*line == '1')
-				display_image(ptrlst, &(*ptrlst->imginfo)[WALL], idx_x * 40, idx_y * 40);
-			else if (*line == 'C')
-				display_image(ptrlst, &(*ptrlst->imginfo)[ITEM], idx_x * 40, idx_y * 40);
-			else if (*line == 'E')
-				display_image(ptrlst, &(*ptrlst->imginfo)[ENDPOINT], idx_x * 40, idx_y * 40);
-			else if (*line == 'P')
-				display_image(ptrlst, &(*ptrlst->imginfo)[RODE], idx_x * 40, idx_y * 40);
-			else if (*line == '\n') 
-				;
-			else
-				return (0);
-			idx_x++;
-			line++;
+			target = ptrlst->map_arr[y_idx][x_idx];
+			mlx_put_image_to_window(ptrlst->mlx_ptr, ptrlst->win_ptr, \
+				ptrlst->imginfo[target].img_ptr, \
+				x_idx * ptrlst->imginfo[target].width, \
+				y_idx * ptrlst->imginfo[target].height);
+			x_idx++;
 		}
-		ptrlst->imginfo[PLAYER]->pos_x = 40;
-		ptrlst->imginfo[PLAYER]->pos_y = 40;
-		idx_y++;
-		ptrlst->map_head = ptrlst->map_head->next;
-		line = ptrlst->map_head->line;
+		y_idx++;
 	}
-	return (0);
 }

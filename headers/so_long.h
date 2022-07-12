@@ -6,7 +6,7 @@
 /*   By: jaesjeon <jaesjeon@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/27 15:48:11 by jaesjeon          #+#    #+#             */
-/*   Updated: 2022/04/06 19:55:24 by jaesjeon         ###   ########.kr       */
+/*   Updated: 2022/07/12 03:37:40 by jaesjeon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,12 @@
 # include <sys/signal.h>
 
 # define ERROR -1
+# define PASS 1
+
 # define RODE 0
 # define WALL 1
 # define ITEM 2
-# define ENDPOINT 3
+# define END 3
 # define PLAYER 4
 
 # define C 0
@@ -34,41 +36,46 @@
 # define KEY_D 2
 # define KEY_ESC 53
 
+# define X 0
+# define Y 1
 
 typedef struct s_map
 {
 	char			*line;
 	size_t			len;
 	struct s_map	*next;
-} t_map;
+}	t_map;
 
-typedef	struct s_imginfo
+typedef struct s_imginfo
 {
 	void	*img_ptr;
-	char	*addr;
-	int		pos_x;
-	int		pos_y;
 	int		width;
 	int		height;
-	int		bpp;
-	int		size_len;
-	int		endian;
-} t_imginfo;
+}	t_imginfo;
 
 typedef struct s_ptrlst
 {
 	void				*mlx_ptr;
 	void				*win_ptr;
 	struct s_map		*map_head;
-	int					map_x;
-	int					map_y;
-	char				**map_arr;
-	struct s_imginfo	(*imginfo)[5];
-} t_ptrlst;
+	size_t				map_x;
+	size_t				map_y;
+	size_t				player_x;
+	size_t				player_y;
+	int					prev_tile;
+	size_t				key_counter;
+	size_t				elements_counter[3];
+	int					**map_arr;
+	struct s_imginfo	*imginfo;
+}	t_ptrlst;
 
-// void	read_map(t_ptrlst *ptrlst, char *map_file);
-// int	check_map(t_ptrlst *ptrlst);
-// int	draw_map(t_ptrlst *ptrlst);
-// int	display_image(t_ptrlst *ptrlst, t_imginfo *imginfo, int x, int y);
+void	exit_with_message(int exit_code, char *exit_message);
+void	check_mapfile_extension(char *filename);
+void	read_map(t_ptrlst *ptrlst, char *map_file);
+void	check_map(t_ptrlst *ptrlst);
+void	convert_map_to_array(t_ptrlst *ptrlst, t_map *map);
+void	free_map_list(t_ptrlst *ptrlst);
+void	draw_map(t_ptrlst *ptrlst);
+int		destroy_window(t_ptrlst *ptrlst);
 
 #endif

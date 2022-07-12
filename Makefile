@@ -3,15 +3,15 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: jaesjeon <jaesjeon@student.42seoul.>       +#+  +:+       +#+         #
+#    By: jaesjeon <jaesjeon@student.42seoul.kr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/25 15:37:47 by jaesjeon          #+#    #+#              #
-#    Updated: 2022/06/24 14:15:39 by jaemjeon         ###   ########.fr        #
+#    Updated: 2022/07/12 15:06:11 by jaesjeon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC = gcc
-CFLAGS =
+CFLAGS = -Wall -Wextra -Werror
 MLX_FLAGS = -framework OpenGL -framework AppKit
 RM = rm -f
 
@@ -24,12 +24,14 @@ MLX_DIR = ./mlx
 SRCS_FILES = so_long.c	\
 			 get_next_line.c	\
 			 get_next_line_utils.c	\
-			 draw_map.c
+			 map_check.c	\
+			 utils.c	\
+			 map_function.c
 SRCS_DIR = ./srcs
-HEADER_DIR = ./srcs
+HEADER_DIR = ./headers
 
 LIBFT_HEADER = $(LIBFT_DIR)/libft.h
-PS_HEADER = 
+SL_HEADER = $(HEADER_DIR)/so_long.h
 SRCS = $(addprefix $(SRCS_DIR)/, $(SRCS_FILES))
 OBJS = $(SRCS:.c=.o)
 
@@ -37,13 +39,21 @@ OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
 
-$(NAME): $(LIBFT_HEADER) $(PS_HEADER) $(OBJS)
+$(NAME): $(LIBFT_HEADER) $(SL_HEADER) $(OBJS) $(LIBFT) $(MLX)
 	make bonus -C $(LIBFT_DIR)
 	cp $(LIBFT_DIR)/$(LIBFT) .
 	make -C $(MLX_DIR)
 	cp $(MLX_DIR)/$(MLX) .
 	export DYLD_LIBRARY_PATH=$$(pwd);\
-	$(CC) $(CFLAGS) -g $(MLX_FLAGS) $(SRCS) -I$(HEADER_DIR) -L. -lft -lmlx -o $@
+	$(CC) $(CFLAGS) -fsanitize=address $(MLX_FLAGS) $(SRCS) -I$(HEADER_DIR) -L. -lft -lmlx -o $@
+
+$(LIBFT): $(LIBFT_HEADER)
+	make bonus -C $(LIBFT_DIR)
+	cp $(LIBFT_DIR)/$(LIBFT) .
+
+$(MLX):
+	make -C $(MLX_DIR)
+	cp $(MLX_DIR)/$(MLX) .
 
 clean:
 	make clean -C $(LIBFT_DIR)
