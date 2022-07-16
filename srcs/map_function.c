@@ -6,7 +6,7 @@
 /*   By: jaesjeon <jaesjeon@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/27 17:11:46 by jaesjeon          #+#    #+#             */
-/*   Updated: 2022/07/12 03:37:14 by jaesjeon         ###   ########.fr       */
+/*   Updated: 2022/07/16 18:11:35 by jaesjeon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,28 +44,6 @@ void	read_map(t_ptrlst *ptrlst, char *map_file)
 	}
 }
 
-static int	convert_alpha(char c)
-{
-	if (c == '0')
-		return (RODE);
-	else if (c == '1')
-		return (WALL);
-	else if (c == 'C')
-		return (ITEM);
-	else if (c == 'E')
-		return (END);
-	else if (c == 'P')
-		return (PLAYER);
-	else
-		return (ERROR);
-}
-
-static void	init_player_position(t_ptrlst *ptrlst, size_t pos_x, size_t pos_y)
-{
-	ptrlst->player_x = pos_x;
-	ptrlst->player_y = pos_y;
-}
-
 void	convert_map_to_array(t_ptrlst *ptrlst, t_map *map)
 {
 	size_t	idx[2];
@@ -85,7 +63,7 @@ void	convert_map_to_array(t_ptrlst *ptrlst, t_map *map)
 		while (*line != '\n' && *line)
 		{
 			(ptrlst->map_arr)[idx[Y]][idx[X]] = convert_alpha(*line);
-			if (*line == 'P' && ptrlst->player_x == 0)
+			if (*line == 'P' && ptrlst->cur_pos[X] == 0)
 				init_player_position(ptrlst, idx[X], idx[Y]);
 			idx[X]++;
 			line++;
@@ -99,7 +77,7 @@ void	draw_map(t_ptrlst *ptrlst)
 {
 	size_t	x_idx;
 	size_t	y_idx;
-	size_t	target;
+	size_t	element;
 
 	y_idx = 0;
 	while (y_idx < ptrlst->map_y)
@@ -107,13 +85,36 @@ void	draw_map(t_ptrlst *ptrlst)
 		x_idx = 0;
 		while (x_idx < ptrlst->map_x)
 		{
-			target = ptrlst->map_arr[y_idx][x_idx];
+			element = ptrlst->map_arr[y_idx][x_idx];
 			mlx_put_image_to_window(ptrlst->mlx_ptr, ptrlst->win_ptr, \
-				ptrlst->imginfo[target].img_ptr, \
-				x_idx * ptrlst->imginfo[target].width, \
-				y_idx * ptrlst->imginfo[target].height);
+				ptrlst->imginfo[element].img_ptr, \
+				x_idx * ptrlst->imginfo[element].width, \
+				y_idx * ptrlst->imginfo[element].height);
 			x_idx++;
 		}
 		y_idx++;
 	}
+}
+
+void	re_draw_map(t_ptrlst *ptrlst)
+{
+	size_t	prev_pos[2];
+	size_t	prev_element;
+	size_t	cur_pos[2];
+	size_t	cur_element;
+
+	prev_pos[X] = ptrlst->cur_pos[X];
+	prev_pos[Y] = ptrlst->cur_pos[Y];
+	prev_element = ptrlst->map_arr[prev_pos[Y]][prev_pos[X]];
+	cur_pos[X] = ptrlst->next_pos[X];
+	cur_pos[Y] = ptrlst->next_pos[Y];
+	cur_element = ptrlst->map_arr[cur_pos[Y]][cur_pos[X]];
+	mlx_put_image_to_window(ptrlst->mlx_ptr, ptrlst->win_ptr, \
+		ptrlst->imginfo[prev_element].img_ptr, \
+		prev_pos[X] * ptrlst->imginfo[prev_element].width, \
+		prev_pos[Y] * ptrlst->imginfo[prev_element].height);
+	mlx_put_image_to_window(ptrlst->mlx_ptr, ptrlst->win_ptr, \
+		ptrlst->imginfo[cur_element].img_ptr, \
+		cur_pos[X] * ptrlst->imginfo[cur_element].width, \
+		cur_pos[Y] * ptrlst->imginfo[cur_element].height);
 }

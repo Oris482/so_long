@@ -6,7 +6,7 @@
 /*   By: jaesjeon <jaesjeon@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/27 17:11:27 by jaesjeon          #+#    #+#             */
-/*   Updated: 2022/07/12 03:40:32 by jaesjeon         ###   ########.fr       */
+/*   Updated: 2022/07/16 18:11:08 by jaesjeon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,39 +36,41 @@ static void	get_xpm_imgs(t_ptrlst *ptrlst, t_imginfo imginfo[])
 	}
 }
 
-static void	get_next_pos(t_ptrlst *ptrlst, int keycode, \
-	size_t *next_x, size_t *next_y)
+static void	get_next_pos(t_ptrlst *ptrlst, int keycode)
 {
-	*next_x = ptrlst->player_x;
-	*next_y = ptrlst->player_y;
+	ptrlst->next_pos[X] = ptrlst->cur_pos[X];
+	ptrlst->next_pos[Y] = ptrlst->cur_pos[Y];
 	if (keycode == KEY_W)
-		*next_y -= 1;
+		ptrlst->next_pos[Y] -= 1;
 	else if (keycode == KEY_A)
-		*next_x -= 1;
+		ptrlst->next_pos[X] -= 1;
 	else if (keycode == KEY_S)
-		*next_y += 1;
+		ptrlst->next_pos[Y] += 1;
 	else if (keycode == KEY_D)
-		*next_x += 1;
+		ptrlst->next_pos[X] += 1;
 }
 
 static int	move_player(int keycode, t_ptrlst *ptrlst)
 {
-	size_t	next_x;
-	size_t	next_y;
+	size_t	*cur_pos;
+	size_t	*next_pos;
 	int		tmp_prev_tile;
 
-	get_next_pos(ptrlst, keycode, &next_x, &next_y);
-	if (ptrlst->map_arr[next_y][next_x] == WALL)
+	cur_pos = ptrlst->cur_pos;
+	next_pos = ptrlst->next_pos;
+	get_next_pos(ptrlst, keycode);
+	if (ptrlst->map_arr[next_pos[Y]][next_pos[X]] == WALL)
 		return (ERROR);
-	tmp_prev_tile = ptrlst->map_arr[next_y][next_x];
-	ptrlst->map_arr[next_y][next_x] = PLAYER;
+	tmp_prev_tile = ptrlst->map_arr[next_pos[Y]][next_pos[X]];
+	ptrlst->map_arr[next_pos[Y]][next_pos[X]] = PLAYER;
 	if (ptrlst->prev_tile == END)
-		ptrlst->map_arr[ptrlst->player_y][ptrlst->player_x] = END;
+		ptrlst->map_arr[cur_pos[Y]][cur_pos[X]] = END;
 	else
-		ptrlst->map_arr[ptrlst->player_y][ptrlst->player_x] = RODE;
+		ptrlst->map_arr[cur_pos[Y]][cur_pos[X]] = RODE;
 	ptrlst->prev_tile = tmp_prev_tile;
-	ptrlst->player_x = next_x;
-	ptrlst->player_y = next_y;
+	re_draw_map(ptrlst);
+	cur_pos[X] = next_pos[X];
+	cur_pos[Y] = next_pos[Y];
 	ptrlst->key_counter++;
 	printf("counter = %zu\n", ptrlst->key_counter);
 	return (PASS);
@@ -93,7 +95,6 @@ static int	handle_key(int keycode, t_ptrlst *ptrlst)
 				printf("%zu items left to clear game\n", \
 				ptrlst->elements_counter[C]);
 		}
-		draw_map(ptrlst);
 	}
 	return (PASS);
 }

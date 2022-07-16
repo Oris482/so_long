@@ -6,7 +6,7 @@
 /*   By: jaesjeon <jaesjeon@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/27 15:48:11 by jaesjeon          #+#    #+#             */
-/*   Updated: 2022/07/12 03:37:40 by jaesjeon         ###   ########.fr       */
+/*   Updated: 2022/07/16 18:04:31 by jaesjeon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,8 +60,8 @@ typedef struct s_ptrlst
 	struct s_map		*map_head;
 	size_t				map_x;
 	size_t				map_y;
-	size_t				player_x;
-	size_t				player_y;
+	size_t				cur_pos[2];
+	size_t				next_pos[2];
 	int					prev_tile;
 	size_t				key_counter;
 	size_t				elements_counter[3];
@@ -71,11 +71,14 @@ typedef struct s_ptrlst
 
 void	exit_with_message(int exit_code, char *exit_message);
 void	check_mapfile_extension(char *filename);
+int		convert_alpha(char c);
+void	init_player_position(t_ptrlst *ptrlst, size_t pos_x, size_t pos_y);
 void	read_map(t_ptrlst *ptrlst, char *map_file);
 void	check_map(t_ptrlst *ptrlst);
 void	convert_map_to_array(t_ptrlst *ptrlst, t_map *map);
 void	free_map_list(t_ptrlst *ptrlst);
 void	draw_map(t_ptrlst *ptrlst);
+void	re_draw_map(t_ptrlst *ptrlst);
 int		destroy_window(t_ptrlst *ptrlst);
 
 #endif
