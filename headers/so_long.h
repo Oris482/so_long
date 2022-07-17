@@ -6,7 +6,7 @@
 /*   By: jaesjeon <jaesjeon@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/27 15:48:11 by jaesjeon          #+#    #+#             */
-/*   Updated: 2022/07/16 18:04:31 by jaesjeon         ###   ########.fr       */
+/*   Updated: 2022/07/17 18:56:03 by jaesjeon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 # include "../mlx/mlx.h"
 # include "../libft/libft.h"
 # include <stdio.h>
-# include <sys/signal.h>
 
 # define ERROR -1
 # define PASS 1
