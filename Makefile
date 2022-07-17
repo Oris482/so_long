@@ -6,7 +6,7 @@
 #    By: jaesjeon <jaesjeon@student.42seoul.kr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/25 15:37:47 by jaesjeon          #+#    #+#              #
-#    Updated: 2022/07/12 15:06:11 by jaesjeon         ###   ########.fr        #
+#    Updated: 2022/07/17 14:23:26 by jaesjeon         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,11 +40,6 @@ OBJS = $(SRCS:.c=.o)
 all: $(NAME)
 
 $(NAME): $(LIBFT_HEADER) $(SL_HEADER) $(OBJS) $(LIBFT) $(MLX)
-	make bonus -C $(LIBFT_DIR)
-	cp $(LIBFT_DIR)/$(LIBFT) .
-	make -C $(MLX_DIR)
-	cp $(MLX_DIR)/$(MLX) .
-	export DYLD_LIBRARY_PATH=$$(pwd);\
 	$(CC) $(CFLAGS) -fsanitize=address $(MLX_FLAGS) $(SRCS) -I$(HEADER_DIR) -L. -lft -lmlx -o $@
 
 $(LIBFT): $(LIBFT_HEADER)
